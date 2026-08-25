@@ -1,0 +1,46 @@
+services:
+  python:
+    build: .
+    container_name: coingecko_python
+    volumes:
+      - .:/app
+    working_dir: /app
+
+  postgres:
+    image: postgres:16
+    container_name: coingecko_postgres
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_DB: coingecko
+    ports: 
+        - "5432:5432"
+
+  spark:
+    image: apache/spark:latest
+    container_name: coingecko_spark
+
+  airflow-apiserver:
+    image: apache/airflow:3.0.6
+    container_name: coingecko_airflow_api
+    command: api-server
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres:5432/coingecko
+    depends_on:
+      - postgres
+
+  airflow-scheduler:
+    image: apache/airflow:3.0.6
+    container_name: coingecko_airflow_scheduler
+    command: scheduler
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres:5432/coingecko
+    depends_on:
+      - postgres
+
+
+           
