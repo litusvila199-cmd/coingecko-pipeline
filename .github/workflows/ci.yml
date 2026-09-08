@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - feature/extract
-  pull_requests:
+  pull_request:
     branches:
       -main
 
