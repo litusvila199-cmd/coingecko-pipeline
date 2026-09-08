@@ -5,8 +5,8 @@ def get_logger(name: str) -> logging.Logger:
 
     if not logger.handlers:
         handler = logging.StreamHandler()
-        formatter = logger.Formatter(
-            "%(asctime)s - %(name)s - %(level)s - %(message)s"
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         )
 
         handler.setFormatter(formatter)
