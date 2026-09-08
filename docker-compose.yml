@@ -4,7 +4,10 @@ services:
     container_name: coingecko_python
     volumes:
       - .:/app
+      - ~/.aws:/root/.aws:ro
     working_dir: /app
+    environment:
+      S3_BUCKET: ${S3_BUCKET}
 
   postgres:
     image: postgres:16
