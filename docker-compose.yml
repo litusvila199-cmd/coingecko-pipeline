@@ -8,6 +8,8 @@ services:
     working_dir: /app
     environment:
       S3_BUCKET: ${S3_BUCKET}
+      PYTHONPATH: /app
+      
 
   postgres:
     image: postgres:16
