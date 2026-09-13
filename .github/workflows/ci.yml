@@ -15,6 +15,9 @@ jobs:
 
     env:
       PYTHONPATH: .
+      API_URL: https://example.com
+      CRYPTO_IDS: bitcoin,ethereum
+      S3_BUCKET: test-bucket
 
     steps:
       - name: Checkout repository
