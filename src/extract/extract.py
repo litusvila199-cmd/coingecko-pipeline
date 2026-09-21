@@ -16,7 +16,7 @@ def extract_data():
             API_URL,
             params={
                 "ids": ",".join(CRYPTO_IDS),
-                "vs_currencies": "usd"
+                "vs_currency": "usd"
             },
             timeout=10
         )
