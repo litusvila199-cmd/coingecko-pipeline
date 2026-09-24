@@ -24,6 +24,8 @@ services:
   spark:
     image: apache/spark:latest
     container_name: coingecko_spark
+    volumes:
+      - .:/app
 
   airflow-apiserver:
     image: apache/airflow:3.0.6
