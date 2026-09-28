@@ -2,3 +2,6 @@ requests
 boto3
 python-dotenv
 pytest
+psycopg2-binary
+pyarrow
+pandas

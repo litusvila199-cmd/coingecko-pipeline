@@ -18,6 +18,11 @@ jobs:
       API_URL: https://example.com
       CRYPTO_IDS: bitcoin,ethereum
       S3_BUCKET: test-bucket
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: coingecko
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: test-password
 
     steps:
       - name: Checkout repository
