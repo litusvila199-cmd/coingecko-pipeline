@@ -9,17 +9,19 @@ services:
     environment:
       S3_BUCKET: ${S3_BUCKET}
       PYTHONPATH: /app
-      
 
   postgres:
     image: postgres:16
     container_name: coingecko_postgres
+    restart: unless-stopped
     environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: postgres
-        POSTGRES_DB: coingecko
-    ports: 
-        - "5432:5432"
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: coingecko
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   spark:
     image: apache/spark:latest
@@ -31,11 +33,20 @@ services:
     image: apache/airflow:3.0.6
     container_name: coingecko_airflow_api
     command: api-server
+    working_dir: /app
+    volumes:
+      - .:/app
+      - airflow_logs:/opt/airflow/logs
     ports:
       - "8080:8080"
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres:5432/coingecko
+      AIRFLOW__CORE__DAGS_FOLDER: /app/dags
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+      AIRFLOW__API_AUTH__JWT_SECRET: cambia-esto-por-un-texto-largo-cualquiera
+      AIRFLOW__API__SECRET_KEY: otro-texto-largo-cualquiera
+      PYTHONPATH: /app
     depends_on:
       - postgres
 
@@ -43,11 +54,42 @@ services:
     image: apache/airflow:3.0.6
     container_name: coingecko_airflow_scheduler
     command: scheduler
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ~/.aws:/home/airflow/.aws:ro
+      - airflow_logs:/opt/airflow/logs
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres:5432/coingecko
+      AIRFLOW__CORE__DAGS_FOLDER: /app/dags
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+      AIRFLOW__API_AUTH__JWT_SECRET: cambia-esto-por-un-texto-largo-cualquiera
+      AIRFLOW__API__SECRET_KEY: otro-texto-largo-cualquiera
+      PYTHONPATH: /app
+    depends_on:
+      - postgres
+      - airflow-apiserver
+
+  airflow-dag-processor:
+    image: apache/airflow:3.0.6
+    container_name: coingecko_airflow_dag_processor
+    command: dag-processor
+    working_dir: /app
+    volumes:
+      - .:/app
+      - airflow_logs:/opt/airflow/logs
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres:5432/coingecko
+      AIRFLOW__CORE__DAGS_FOLDER: /app/dags
+      AIRFLOW__CORE__EXECUTION_API_SERVER_URL: http://airflow-apiserver:8080/execution/
+      AIRFLOW__API_AUTH__JWT_SECRET: cambia-esto-por-un-texto-largo-cualquiera
+      AIRFLOW__API__SECRET_KEY: otro-texto-largo-cualquiera
+      PYTHONPATH: /app
     depends_on:
       - postgres
 
-
-           
+volumes:
+  postgres_data:
+  airflow_logs:
