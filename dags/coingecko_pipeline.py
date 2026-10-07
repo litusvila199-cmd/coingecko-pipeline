@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow.sdk import dag, task
 from airflow.providers.amazon.aws.operators.glue import GlueJobOperator
@@ -12,6 +12,10 @@ from src.load.load import read_from_s3, load_to_postgres
     start_date=datetime(2026, 9, 29),
     schedule="@daily",
     catchup=False,
+    default_args={
+        "retries": 3,
+        "retry_delay": timedelta(minutes=1),
+    }
 )
 def coingecko_pipeline():
 
